@@ -42,7 +42,7 @@ from util import pretty_ts
 from util import resolve_string
 from util import ts_now
 from util import ts_to_dt
-
+from util import replace_es_key_value_in_dict
 
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -1952,12 +1952,18 @@ class HTTPPostAlerter(Alerter):
         for match in matches:
             payload = match if self.post_all_values else {}
             payload.update(self.post_static_payload)
-            for post_key, es_key in self.post_payload.items():
-                payload[post_key] = lookup_es_key(match, es_key)
+            # for post_key, es_key in self.post_payload.items():
+            #     payload[post_key] = lookup_es_key(match, es_key)
+ 
+            # Replace all the keys/string which is in curly braces {user}
+            self.post_payload = replace_es_key_value_in_dict(self.post_payload, match)
+            payload.update(self.post_payload)
+            # print json.dumps(payload)
             headers = {
                 "Content-Type": "application/json",
                 "Accept": "application/json;charset=utf-8"
             }
+            self.post_http_headers = replace_es_key_value_in_dict(self.post_http_headers, match)
             headers.update(self.post_http_headers)
             proxies = {'https': self.post_proxy} if self.post_proxy else None
             for url in self.post_url:

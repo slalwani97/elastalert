@@ -116,6 +116,31 @@ def set_es_key(lookup_dict, term, value):
 
     return False
 
+def replace_es_key_value_in_string(string, match): 
+    keys_to_be_replaced = re.findall('{(.+?)}', string)
+    # remove duplicates from list
+    keys_to_be_replaced = list(dict.fromkeys(keys_to_be_replaced))
+    for key in keys_to_be_replaced:
+        es_value = lookup_es_key(match, key.strip())
+        if es_value == None:
+           es_value = ''
+        string = string.replace('{' + key + '}', es_value)
+    return string
+
+
+def replace_es_key_value_in_dict(body, match):
+    if isinstance(body, str):
+       return replace_es_key_value_in_string(body, match) 
+
+    if isinstance(body, dict):
+       for key, val in body.items(): 
+           body[key] = replace_es_key_value_in_dict(val, match)
+
+    if isinstance(body, list):
+       for val in body:
+           val = replace_es_key_value_in_dict(val, match)
+
+    return body
 
 def lookup_es_key(lookup_dict, term):
     """ Performs iterative dictionary search for the given term.
