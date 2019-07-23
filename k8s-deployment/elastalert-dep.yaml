@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastalert-deployment
+  labels:
+    app: elastalert
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elastalert
+  template:
+    metadata:
+      labels:
+        app: elastalert
+    spec:
+            # securityContext:
+            #   fsGroup: 1000
+      containers:
+      - name: elastalert
+        image: slalwani97/elastalert:without-node
+        imagePullPolicy: Always
+        # securityContext:
+        #   runAsUser: 1000
+        ports:
+        - containerPort: 3030
+          name: http
+          protocol: TCP
+        - containerPort: 3333
+          name: websocket
+          protocol: TCP
+          #     volumeMounts:
+          # - name: elastalert
+          #  mountPath: /opt/elastalert
+          # - name: elastalert-config
+          #  mountPath: /opt/elastalert/config.yaml
+          #  subPath: config.yaml 
+          #  volumes:
+          # - name: elastalert
+          #  emptyDir: {}
+          # - name: elastalert-config
+          #  configMap:
+          #  name: "elastalert-config"
+
+
