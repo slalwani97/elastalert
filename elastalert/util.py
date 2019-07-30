@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import copy
 import collections
 import datetime
 import logging
@@ -127,18 +128,22 @@ def replace_es_key_value_in_string(string, match):
         string = string.replace('{' + key + '}', es_value)
     return string
 
-
 def replace_es_key_value_in_dict(body, match):
+    new_body = copy.deepcopy(body)
+    new_body = replace_es_key_value_in_dict_util(new_body, match)
+    return new_body
+
+def replace_es_key_value_in_dict_util(body, match):
     if isinstance(body, str):
        return replace_es_key_value_in_string(body, match) 
 
     if isinstance(body, dict):
        for key, val in body.items(): 
-           body[key] = replace_es_key_value_in_dict(val, match)
+           body[key] = replace_es_key_value_in_dict_util(val, match)
 
     if isinstance(body, list):
        for val in body:
-           val = replace_es_key_value_in_dict(val, match)
+           val = replace_es_key_value_in_dict_util(val, match)
 
     return body
 

@@ -1956,15 +1956,15 @@ class HTTPPostAlerter(Alerter):
             #     payload[post_key] = lookup_es_key(match, es_key)
  
             # Replace all the keys/string which is in curly braces {user}
-            self.post_payload = replace_es_key_value_in_dict(self.post_payload, match)
-            payload.update(self.post_payload)
+            updated_post_payload = replace_es_key_value_in_dict(self.post_payload, match)
+            payload.update(updated_post_payload)
             # print json.dumps(payload)
             headers = {
                 "Content-Type": "application/json",
                 "Accept": "application/json;charset=utf-8"
             }
-            self.post_http_headers = replace_es_key_value_in_dict(self.post_http_headers, match)
-            headers.update(self.post_http_headers)
+            updated_post_http_headers = replace_es_key_value_in_dict(self.post_http_headers, match)
+            headers.update(updated_post_http_headers)
             proxies = {'https': self.post_proxy} if self.post_proxy else None
             for url in self.post_url:
                 try:
